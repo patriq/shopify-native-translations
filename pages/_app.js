@@ -5,6 +5,7 @@ import { Redirect } from "@shopify/app-bridge/actions";
 import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import "@shopify/polaris/dist/styles.css";
 import translations from "@shopify/polaris/locales/en.json";
+import ShopLocalesProvider from "../context/ShopLocales";
 
 const userLoggedInFetch = (app) => {
   const fetchFunction = authenticatedFetch(app);
@@ -36,7 +37,9 @@ const CustomApolloProvider = ({ Component, ...props }) => {
 
   return (
     <ApolloProvider client={client}>
-      <Component {...props} />
+      <ShopLocalesProvider>
+        <Component {...props} />
+      </ShopLocalesProvider>
     </ApolloProvider>
   );
 };
