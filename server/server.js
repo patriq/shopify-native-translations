@@ -1,7 +1,7 @@
 import "@babel/polyfill";
 import dotenv from "dotenv";
 import createShopifyAuth, { verifyRequest } from "@shopify/koa-shopify-auth";
-import Shopify, { ApiVersion } from "@shopify/shopify-api";
+import Shopify from "@shopify/shopify-api";
 import Koa from "koa";
 import next from "next";
 import Router from "koa-router";
@@ -19,7 +19,7 @@ Shopify.Context.initialize({
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
   SCOPES: process.env.SCOPES.split(","),
   HOST_NAME: process.env.HOST.replace(/https:\/\/|\/$/g, ""),
-  API_VERSION: ApiVersion.October20,
+  API_VERSION: "2022-01",
   IS_EMBEDDED_APP: true,
   // This should be replaced with your preferred storage strategy
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
@@ -39,6 +39,7 @@ app.prepare().then(async () => {
         // Access token and shop available in ctx.state.shopify
         const { shop, accessToken, scope } = ctx.state.shopify;
         const host = ctx.query.host;
+
         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
 
         const response = await Shopify.Webhooks.Registry.register({
@@ -52,8 +53,7 @@ app.prepare().then(async () => {
 
         if (!response.success) {
           console.log(
-            `Failed to register APP_UNINSTALLED webhook: ${response.result}`
-          );
+            `Failed to register APP_UNINSTALLED webhook: ${response.result}`);
         }
 
         // Redirect to app with shop parameter upon auth
@@ -68,15 +68,6 @@ app.prepare().then(async () => {
     ctx.res.statusCode = 200;
   };
 
-  router.post("/webhooks", async (ctx) => {
-    try {
-      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-      console.log(`Webhook processed, returned status code 200`);
-    } catch (error) {
-      console.log(`Failed to process webhook: ${error}`);
-    }
-  });
-
   router.post(
     "/graphql",
     verifyRequest({ returnHeader: true }),
@@ -89,12 +80,20 @@ app.prepare().then(async () => {
   router.get("/_next/webpack-hmr", handleRequest); // Webpack content is clear
   router.get("(.*)", async (ctx) => {
     const shop = ctx.query.shop;
-
     // This shop hasn't been seen yet, go through OAuth to create a session
     if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
       ctx.redirect(`/auth?shop=${shop}`);
     } else {
       await handleRequest(ctx);
+    }
+  });
+
+  router.post("/webhooks", async (ctx) => {
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+      console.log(`Webhook processed, returned status code 200`);
+    } catch (error) {
+      console.log(`Failed to process webhook: ${error}`);
     }
   });
 
