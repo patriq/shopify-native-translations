@@ -11,8 +11,8 @@ const GET_SHOP_LOCALES = gql`{
 }`;
 
 const ENABLE_LOCALE = gql`
-  mutation enableLocale($locale: String!) {
-    shopLocaleEnable(locale: $locale) {
+  mutation enableLocale($localeCode: String!) {
+    shopLocaleEnable(locale: $localeCode) {
       userErrors {
         message
         field
@@ -28,8 +28,8 @@ const ENABLE_LOCALE = gql`
 `;
 
 const DISABLE_LOCALE = gql`
-  mutation disableLocale($locale: String!) {
-    shopLocaleDisable(locale: $locale) {
+  mutation disableLocale($localeCode: String!) {
+    shopLocaleDisable(locale: $localeCode) {
       userErrors {
         message
         field
@@ -40,8 +40,8 @@ const DISABLE_LOCALE = gql`
 `;
 
 const UPDATE_LOCALE = gql`
-  mutation updateLocale($locale: String!, $shopLocale: ShopLocaleInput!) {
-    shopLocaleUpdate(locale: $locale, shopLocale: $shopLocale) {
+  mutation updateLocale($localeCode: String!, $shopLocale: ShopLocaleInput!) {
+    shopLocaleUpdate(locale: $localeCode, shopLocale: $shopLocale) {
       userErrors {
         message
         field
@@ -90,21 +90,19 @@ export const useUpdateLocaleMutation = () => {
 const useShopLocalesContext = () => {
   const { loading, data } = useQuery(GET_SHOP_LOCALES);
 
-  const primaryLocale = React.useMemo(() => {
-    const locale = data?.shopLocales.find((locale) => locale.primary);
-    if (!locale) {
-      return undefined;
-    }
-    return { ...locale, name: SHOP_LOCALES[locale.locale] };
+  const locales = React.useMemo(() => {
+    const locales = data?.shopLocales || [];
+    return locales.map(({ locale, primary, published }) => ({
+      code: locale,
+      name: SHOP_LOCALES[locale],
+      primary,
+      published
+    }));
   }, [data]);
-  const secondaryLocales = React.useMemo(() => {
-    return data?.shopLocales
-      .filter((locale) => !locale.primary)
-      .map((locale) => ({
-        ...locale,
-        name: SHOP_LOCALES[locale.locale]
-      })) || [];
-  }, [data]);
+  const primaryLocale = React.useMemo(() =>
+    locales.find((locale) => locale.primary), [locales]);
+  const secondaryLocales = React.useMemo(() =>
+    locales.filter((locale) => !locale.primary), [locales]);
 
   return {
     loadingLocales: loading,

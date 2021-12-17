@@ -7,549 +7,150 @@
     }
   }
  */
-const SHOP_LOCALES = [
-  {
-    "isoCode": "af",
-    "name": "Afrikaans"
-  },
-  {
-    "isoCode": "ak",
-    "name": "Akan"
-  },
-  {
-    "isoCode": "sq",
-    "name": "Albanian"
-  },
-  {
-    "isoCode": "am",
-    "name": "Amharic"
-  },
-  {
-    "isoCode": "ar",
-    "name": "Arabic"
-  },
-  {
-    "isoCode": "hy",
-    "name": "Armenian"
-  },
-  {
-    "isoCode": "as",
-    "name": "Assamese"
-  },
-  {
-    "isoCode": "az",
-    "name": "Azerbaijani"
-  },
-  {
-    "isoCode": "bm",
-    "name": "Bambara"
-  },
-  {
-    "isoCode": "bn",
-    "name": "Bangla"
-  },
-  {
-    "isoCode": "eu",
-    "name": "Basque"
-  },
-  {
-    "isoCode": "be",
-    "name": "Belarusian"
-  },
-  {
-    "isoCode": "bs",
-    "name": "Bosnian"
-  },
-  {
-    "isoCode": "br",
-    "name": "Breton"
-  },
-  {
-    "isoCode": "bg",
-    "name": "Bulgarian"
-  },
-  {
-    "isoCode": "my",
-    "name": "Burmese"
-  },
-  {
-    "isoCode": "ca",
-    "name": "Catalan"
-  },
-  {
-    "isoCode": "ce",
-    "name": "Chechen"
-  },
-  {
-    "isoCode": "zh-CN",
-    "name": "Chinese (Simplified)"
-  },
-  {
-    "isoCode": "zh-TW",
-    "name": "Chinese (Traditional)"
-  },
-  {
-    "isoCode": "cu",
-    "name": "Church Slavic"
-  },
-  {
-    "isoCode": "kw",
-    "name": "Cornish"
-  },
-  {
-    "isoCode": "hr",
-    "name": "Croatian"
-  },
-  {
-    "isoCode": "cs",
-    "name": "Czech"
-  },
-  {
-    "isoCode": "da",
-    "name": "Danish"
-  },
-  {
-    "isoCode": "nl",
-    "name": "Dutch"
-  },
-  {
-    "isoCode": "dz",
-    "name": "Dzongkha"
-  },
-  {
-    "isoCode": "en",
-    "name": "English"
-  },
-  {
-    "isoCode": "eo",
-    "name": "Esperanto"
-  },
-  {
-    "isoCode": "et",
-    "name": "Estonian"
-  },
-  {
-    "isoCode": "ee",
-    "name": "Ewe"
-  },
-  {
-    "isoCode": "fo",
-    "name": "Faroese"
-  },
-  {
-    "isoCode": "fi",
-    "name": "Finnish"
-  },
-  {
-    "isoCode": "fr",
-    "name": "French"
-  },
-  {
-    "isoCode": "ff",
-    "name": "Fulah"
-  },
-  {
-    "isoCode": "gl",
-    "name": "Galician"
-  },
-  {
-    "isoCode": "lg",
-    "name": "Ganda"
-  },
-  {
-    "isoCode": "ka",
-    "name": "Georgian"
-  },
-  {
-    "isoCode": "de",
-    "name": "German"
-  },
-  {
-    "isoCode": "el",
-    "name": "Greek"
-  },
-  {
-    "isoCode": "gu",
-    "name": "Gujarati"
-  },
-  {
-    "isoCode": "ha",
-    "name": "Hausa"
-  },
-  {
-    "isoCode": "he",
-    "name": "Hebrew"
-  },
-  {
-    "isoCode": "hi",
-    "name": "Hindi"
-  },
-  {
-    "isoCode": "hu",
-    "name": "Hungarian"
-  },
-  {
-    "isoCode": "is",
-    "name": "Icelandic"
-  },
-  {
-    "isoCode": "ig",
-    "name": "Igbo"
-  },
-  {
-    "isoCode": "id",
-    "name": "Indonesian"
-  },
-  {
-    "isoCode": "ia",
-    "name": "Interlingua"
-  },
-  {
-    "isoCode": "ga",
-    "name": "Irish"
-  },
-  {
-    "isoCode": "it",
-    "name": "Italian"
-  },
-  {
-    "isoCode": "ja",
-    "name": "Japanese"
-  },
-  {
-    "isoCode": "jv",
-    "name": "Javanese"
-  },
-  {
-    "isoCode": "kl",
-    "name": "Kalaallisut"
-  },
-  {
-    "isoCode": "kn",
-    "name": "Kannada"
-  },
-  {
-    "isoCode": "ks",
-    "name": "Kashmiri"
-  },
-  {
-    "isoCode": "kk",
-    "name": "Kazakh"
-  },
-  {
-    "isoCode": "km",
-    "name": "Khmer"
-  },
-  {
-    "isoCode": "ki",
-    "name": "Kikuyu"
-  },
-  {
-    "isoCode": "rw",
-    "name": "Kinyarwanda"
-  },
-  {
-    "isoCode": "ko",
-    "name": "Korean"
-  },
-  {
-    "isoCode": "ku",
-    "name": "Kurdish"
-  },
-  {
-    "isoCode": "ky",
-    "name": "Kyrgyz"
-  },
-  {
-    "isoCode": "lo",
-    "name": "Lao"
-  },
-  {
-    "isoCode": "lv",
-    "name": "Latvian"
-  },
-  {
-    "isoCode": "ln",
-    "name": "Lingala"
-  },
-  {
-    "isoCode": "lt",
-    "name": "Lithuanian"
-  },
-  {
-    "isoCode": "lu",
-    "name": "Luba-Katanga"
-  },
-  {
-    "isoCode": "lb",
-    "name": "Luxembourgish"
-  },
-  {
-    "isoCode": "mk",
-    "name": "Macedonian"
-  },
-  {
-    "isoCode": "mg",
-    "name": "Malagasy"
-  },
-  {
-    "isoCode": "ms",
-    "name": "Malay"
-  },
-  {
-    "isoCode": "ml",
-    "name": "Malayalam"
-  },
-  {
-    "isoCode": "mt",
-    "name": "Maltese"
-  },
-  {
-    "isoCode": "gv",
-    "name": "Manx"
-  },
-  {
-    "isoCode": "mi",
-    "name": "Maori"
-  },
-  {
-    "isoCode": "mr",
-    "name": "Marathi"
-  },
-  {
-    "isoCode": "mn",
-    "name": "Mongolian"
-  },
-  {
-    "isoCode": "ne",
-    "name": "Nepali"
-  },
-  {
-    "isoCode": "nd",
-    "name": "North Ndebele"
-  },
-  {
-    "isoCode": "se",
-    "name": "Northern Sami"
-  },
-  {
-    "isoCode": "no",
-    "name": "Norwegian"
-  },
-  {
-    "isoCode": "nb",
-    "name": "Norwegian (Bokmål)"
-  },
-  {
-    "isoCode": "nn",
-    "name": "Norwegian Nynorsk"
-  },
-  {
-    "isoCode": "or",
-    "name": "Odia"
-  },
-  {
-    "isoCode": "om",
-    "name": "Oromo"
-  },
-  {
-    "isoCode": "os",
-    "name": "Ossetic"
-  },
-  {
-    "isoCode": "ps",
-    "name": "Pashto"
-  },
-  {
-    "isoCode": "fa",
-    "name": "Persian"
-  },
-  {
-    "isoCode": "pl",
-    "name": "Polish"
-  },
-  {
-    "isoCode": "pt-BR",
-    "name": "Portuguese (Brazil)"
-  },
-  {
-    "isoCode": "pt-PT",
-    "name": "Portuguese (Portugal)"
-  },
-  {
-    "isoCode": "pa",
-    "name": "Punjabi"
-  },
-  {
-    "isoCode": "qu",
-    "name": "Quechua"
-  },
-  {
-    "isoCode": "ro",
-    "name": "Romanian"
-  },
-  {
-    "isoCode": "rm",
-    "name": "Romansh"
-  },
-  {
-    "isoCode": "rn",
-    "name": "Rundi"
-  },
-  {
-    "isoCode": "ru",
-    "name": "Russian"
-  },
-  {
-    "isoCode": "sg",
-    "name": "Sango"
-  },
-  {
-    "isoCode": "gd",
-    "name": "Scottish Gaelic"
-  },
-  {
-    "isoCode": "sr",
-    "name": "Serbian"
-  },
-  {
-    "isoCode": "sn",
-    "name": "Shona"
-  },
-  {
-    "isoCode": "ii",
-    "name": "Sichuan Yi"
-  },
-  {
-    "isoCode": "sd",
-    "name": "Sindhi"
-  },
-  {
-    "isoCode": "si",
-    "name": "Sinhala"
-  },
-  {
-    "isoCode": "sk",
-    "name": "Slovak"
-  },
-  {
-    "isoCode": "sl",
-    "name": "Slovenian"
-  },
-  {
-    "isoCode": "so",
-    "name": "Somali"
-  },
-  {
-    "isoCode": "es",
-    "name": "Spanish"
-  },
-  {
-    "isoCode": "su",
-    "name": "Sundanese"
-  },
-  {
-    "isoCode": "sw",
-    "name": "Swahili"
-  },
-  {
-    "isoCode": "sv",
-    "name": "Swedish"
-  },
-  {
-    "isoCode": "tg",
-    "name": "Tajik"
-  },
-  {
-    "isoCode": "ta",
-    "name": "Tamil"
-  },
-  {
-    "isoCode": "tt",
-    "name": "Tatar"
-  },
-  {
-    "isoCode": "te",
-    "name": "Telugu"
-  },
-  {
-    "isoCode": "th",
-    "name": "Thai"
-  },
-  {
-    "isoCode": "bo",
-    "name": "Tibetan"
-  },
-  {
-    "isoCode": "ti",
-    "name": "Tigrinya"
-  },
-  {
-    "isoCode": "to",
-    "name": "Tongan"
-  },
-  {
-    "isoCode": "tr",
-    "name": "Turkish"
-  },
-  {
-    "isoCode": "tk",
-    "name": "Turkmen"
-  },
-  {
-    "isoCode": "uk",
-    "name": "Ukrainian"
-  },
-  {
-    "isoCode": "ur",
-    "name": "Urdu"
-  },
-  {
-    "isoCode": "ug",
-    "name": "Uyghur"
-  },
-  {
-    "isoCode": "uz",
-    "name": "Uzbek"
-  },
-  {
-    "isoCode": "vi",
-    "name": "Vietnamese"
-  },
-  {
-    "isoCode": "vo",
-    "name": "Volapük"
-  },
-  {
-    "isoCode": "cy",
-    "name": "Welsh"
-  },
-  {
-    "isoCode": "fy",
-    "name": "Western Frisian"
-  },
-  {
-    "isoCode": "wo",
-    "name": "Wolof"
-  },
-  {
-    "isoCode": "xh",
-    "name": "Xhosa"
-  },
-  {
-    "isoCode": "yi",
-    "name": "Yiddish"
-  },
-  {
-    "isoCode": "yo",
-    "name": "Yoruba"
-  },
-  {
-    "isoCode": "zu",
-    "name": "Zulu"
-  }
-].reduce((obj, locale) => ({ ...obj, [locale.isoCode]: locale.name }), {});
+const SHOP_LOCALES = {
+  "af": "Afrikaans",
+  "ak": "Akan",
+  "sq": "Albanian",
+  "am": "Amharic",
+  "ar": "Arabic",
+  "hy": "Armenian",
+  "as": "Assamese",
+  "az": "Azerbaijani",
+  "bm": "Bambara",
+  "bn": "Bangla",
+  "eu": "Basque",
+  "be": "Belarusian",
+  "bs": "Bosnian",
+  "br": "Breton",
+  "bg": "Bulgarian",
+  "my": "Burmese",
+  "ca": "Catalan",
+  "ce": "Chechen",
+  "zh-CN": "Chinese (Simplified)",
+  "zh-TW": "Chinese (Traditional)",
+  "cu": "Church Slavic",
+  "kw": "Cornish",
+  "hr": "Croatian",
+  "cs": "Czech",
+  "da": "Danish",
+  "nl": "Dutch",
+  "dz": "Dzongkha",
+  "en": "English",
+  "eo": "Esperanto",
+  "et": "Estonian",
+  "ee": "Ewe",
+  "fo": "Faroese",
+  "fi": "Finnish",
+  "fr": "French",
+  "ff": "Fulah",
+  "gl": "Galician",
+  "lg": "Ganda",
+  "ka": "Georgian",
+  "de": "German",
+  "el": "Greek",
+  "gu": "Gujarati",
+  "ha": "Hausa",
+  "he": "Hebrew",
+  "hi": "Hindi",
+  "hu": "Hungarian",
+  "is": "Icelandic",
+  "ig": "Igbo",
+  "id": "Indonesian",
+  "ia": "Interlingua",
+  "ga": "Irish",
+  "it": "Italian",
+  "ja": "Japanese",
+  "jv": "Javanese",
+  "kl": "Kalaallisut",
+  "kn": "Kannada",
+  "ks": "Kashmiri",
+  "kk": "Kazakh",
+  "km": "Khmer",
+  "ki": "Kikuyu",
+  "rw": "Kinyarwanda",
+  "ko": "Korean",
+  "ku": "Kurdish",
+  "ky": "Kyrgyz",
+  "lo": "Lao",
+  "lv": "Latvian",
+  "ln": "Lingala",
+  "lt": "Lithuanian",
+  "lu": "Luba-Katanga",
+  "lb": "Luxembourgish",
+  "mk": "Macedonian",
+  "mg": "Malagasy",
+  "ms": "Malay",
+  "ml": "Malayalam",
+  "mt": "Maltese",
+  "gv": "Manx",
+  "mi": "Maori",
+  "mr": "Marathi",
+  "mn": "Mongolian",
+  "ne": "Nepali",
+  "nd": "North Ndebele",
+  "se": "Northern Sami",
+  "no": "Norwegian",
+  "nb": "Norwegian (Bokmål)",
+  "nn": "Norwegian Nynorsk",
+  "or": "Odia",
+  "om": "Oromo",
+  "os": "Ossetic",
+  "ps": "Pashto",
+  "fa": "Persian",
+  "pl": "Polish",
+  "pt-BR": "Portuguese (Brazil)",
+  "pt-PT": "Portuguese (Portugal)",
+  "pa": "Punjabi",
+  "qu": "Quechua",
+  "ro": "Romanian",
+  "rm": "Romansh",
+  "rn": "Rundi",
+  "ru": "Russian",
+  "sg": "Sango",
+  "gd": "Scottish Gaelic",
+  "sr": "Serbian",
+  "sn": "Shona",
+  "ii": "Sichuan Yi",
+  "sd": "Sindhi",
+  "si": "Sinhala",
+  "sk": "Slovak",
+  "sl": "Slovenian",
+  "so": "Somali",
+  "es": "Spanish",
+  "su": "Sundanese",
+  "sw": "Swahili",
+  "sv": "Swedish",
+  "tg": "Tajik",
+  "ta": "Tamil",
+  "tt": "Tatar",
+  "te": "Telugu",
+  "th": "Thai",
+  "bo": "Tibetan",
+  "ti": "Tigrinya",
+  "to": "Tongan",
+  "tr": "Turkish",
+  "tk": "Turkmen",
+  "uk": "Ukrainian",
+  "ur": "Urdu",
+  "ug": "Uyghur",
+  "uz": "Uzbek",
+  "vi": "Vietnamese",
+  "vo": "Volapük",
+  "cy": "Welsh",
+  "fy": "Western Frisian",
+  "wo": "Wolof",
+  "xh": "Xhosa",
+  "yi": "Yiddish",
+  "yo": "Yoruba",
+  "zu": "Zulu"
+};
+
+const SHOP_LOCALE_OPTIONS = Object.entries(SHOP_LOCALES).map(([key, value]) => ({
+  value: key,
+  label: value
+}));
 
 module.exports = {
-  SHOP_LOCALES
+  SHOP_LOCALES,
+  SHOP_LOCALE_OPTIONS
 };

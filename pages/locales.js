@@ -2,6 +2,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Icon,
   Modal,
   Page,
   ResourceItem,
@@ -9,13 +10,12 @@ import {
   Select,
   Spinner,
   Stack,
-  TextStyle,
-  Icon
+  TextStyle
 } from "@shopify/polaris";
 import { DeleteMinor } from "@shopify/polaris-icons";
 import { useRouter } from "next/router";
 import React from "react";
-import { SHOP_LOCALES } from "../constants/locales";
+import { SHOP_LOCALE_OPTIONS } from "../constants/locales";
 import {
   useDisableLocaleMutation,
   useEnableLocaleMutation,
@@ -23,15 +23,13 @@ import {
   useUpdateLocaleMutation
 } from "../context/ShopLocales";
 
-const OPTIONS = Object.entries(SHOP_LOCALES).map(([key, value]) => ({
-  label: value,
-  value: key
-}));
-
 const AddLocaleModal = ({ open, setOpen }) => {
   const initialRender = React.useRef(true);
-  const [value, setValue] = React.useState(OPTIONS[0].value);
+  const [localeCode, setLocaleCode] = React.useState(SHOP_LOCALE_OPTIONS[0].value);
   const [enableLocale, { loading }] = useEnableLocaleMutation();
+
+  const handleAdd = React.useCallback(() =>
+    enableLocale({ variables: { localeCode } }), [enableLocale, localeCode]);
 
   // Close after loading stops
   React.useEffect(() => {
@@ -44,12 +42,12 @@ const AddLocaleModal = ({ open, setOpen }) => {
     }
   }, [setOpen, loading]);
 
-  // Clear if not open
+  // Reset to default if not open
   React.useEffect(() => {
     if (!open) {
-      setValue(OPTIONS[0].value);
+      setLocaleCode(SHOP_LOCALE_OPTIONS[0].value);
     }
-  }, [open, setValue]);
+  }, [open, setLocaleCode]);
 
   if (!open) {
     return null;
@@ -61,9 +59,7 @@ const AddLocaleModal = ({ open, setOpen }) => {
       title="Add locale"
       primaryAction={{
         content: "Add locale",
-        onAction: () => {
-          enableLocale({ variables: { locale: value } });
-        },
+        onAction: handleAdd,
         loading
       }}
       secondaryActions={[{
@@ -74,9 +70,9 @@ const AddLocaleModal = ({ open, setOpen }) => {
       <Modal.Section>
         <Select
           label="Locale"
-          options={OPTIONS}
-          value={value}
-          onChange={setValue}
+          options={SHOP_LOCALE_OPTIONS}
+          value={localeCode}
+          onChange={setLocaleCode}
           autoComplete="off"
         />
       </Modal.Section>
@@ -88,6 +84,9 @@ const RemoveLocaleModal = ({ locale }) => {
   const initialRender = React.useRef(true);
   const [open, setOpen] = React.useState(false);
   const [disableLocale, { loading }] = useDisableLocaleMutation();
+
+  const handleRemove = React.useCallback(() =>
+    disableLocale({ variables: { localeCode: locale.code } }), [disableLocale, locale]);
 
   // Close after loading stops
   React.useEffect(() => {
@@ -115,10 +114,8 @@ const RemoveLocaleModal = ({ locale }) => {
       onClose={() => setOpen(false)}
       title={`Remove ${locale.name}?`}
       primaryAction={{
-        content: "Remove ",
-        onAction: () => {
-          disableLocale({ variables: { locale: locale.locale } });
-        },
+        content: "Remove",
+        onAction: handleRemove,
         loading,
         destructive: true
       }}
@@ -136,21 +133,22 @@ const RemoveLocaleModal = ({ locale }) => {
   );
 };
 
-const TogglePublishButton = ({ published, locale }) => {
+const TogglePublishButton = ({ locale, published }) => {
   const [updateLocale, { loading }] = useUpdateLocaleMutation();
+
+  const handleUpdate = React.useCallback(() =>
+    updateLocale({
+      variables: {
+        localeCode: locale.code,
+        shopLocale: { published: !published }
+      }
+    }), [updateLocale, locale, published]);
 
   return (
     <Button
       size="slim"
       loading={loading}
-      onClick={() => {
-        updateLocale({
-          variables: {
-            locale: locale.locale,
-            shopLocale: { published: !published }
-          }
-        });
-      }}
+      onClick={handleUpdate}
     >
       {published ? "Unpublish" : "Publish"}
     </Button>
@@ -191,20 +189,20 @@ const Locales = () => {
           <ResourceList
             loading={loadingLocales}
             items={secondaryLocales}
-            renderItem={(item) => {
-              const { locale, name, published } = item;
+            renderItem={(locale) => {
+              const { code, name, published } = locale;
               return (
-                <ResourceItem id={locale}>
+                <ResourceItem id={code}>
                   <Stack>
                     <Stack.Item fill>
                       <TextStyle variation="strong">{name}</TextStyle>
                     </Stack.Item>
                     <ButtonGroup segmented>
                       <TogglePublishButton
-                        locale={item}
+                        locale={locale}
                         published={published}
                       />
-                      {!published && <RemoveLocaleModal locale={item} />}
+                      {!published && <RemoveLocaleModal locale={locale} />}
                     </ButtonGroup>
                   </Stack>
                 </ResourceItem>
