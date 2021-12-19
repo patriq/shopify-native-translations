@@ -20,7 +20,16 @@ const CustomApolloProvider = ({ Component, ...props }) => {
       },
       credentials: "include"
     }),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            // Used in collections/index.js
+            collections: relayStylePagination(),
+          },
+        },
+      },
+    })
   });
 
   return (
