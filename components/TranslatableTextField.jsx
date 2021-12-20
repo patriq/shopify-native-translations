@@ -1,15 +1,14 @@
 import { TextField } from "@shopify/polaris";
 import React from "react";
-import { COLLECTION_FIELDS } from "../constants/translatableContents";
 
-const TranslatableTextField = ({ translatableContentKey, onChange, value }) => {
+const TranslatableTextField = ({ translatableContent, onChange, value }) => {
   return (
     <TextField
-      label={COLLECTION_FIELDS[translatableContentKey]}
-      value={value}
+      label={translatableContent.label}
+      value={value === undefined ? translatableContent.value : value}
       disabled={!onChange}
       onChange={onChange}
-      multiline={translatableContentKey.includes("html") ? 5 : false}
+      multiline={translatableContent.key.includes("html") ? 5 : false}
     />
   );
 };

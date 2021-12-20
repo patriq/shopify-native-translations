@@ -37,13 +37,17 @@ const TranslatableCards = ({ resources }) => {
       skip: loadingLocales
     });
 
-  // Filter the relevant fields out of each resource
+  // Label and filter the relevant fields
   const translatableResources = React.useMemo(() => {
     const edges = data?.translatableResourcesByIds?.edges || [];
     return edges.map(({ node }) => ({
       ...node,
       translatableContent: node.translatableContent
-        .filter((field) => resources[node.resourceId].includes(field.key))
+        .map((field) => ({
+          ...field,
+          label: resources[node.resourceId][field.key]
+        }))
+        .filter((field) => field.label),
     }));
   }, [resources, data]);
 

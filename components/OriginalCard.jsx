@@ -24,9 +24,8 @@ const OriginalCard = ({ translatableResources, loadingTranslations }) => {
             translatableResources.map((resource) =>
               resource.translatableContent.map((content) =>
                 <TranslatableTextField
-                  key={resource.resourceId + content.key}
-                  translatableContentKey={content.key}
-                  value={content.value}
+                  key={content.digest}
+                  translatableContent={content}
                 />))}
         </FormLayout>
       </Card.Section>

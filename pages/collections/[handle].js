@@ -48,8 +48,7 @@ const Collection = () => {
     >
       <TranslatableCards
         resources={{
-          [collection.id]: Object.keys(COLLECTION_FIELDS),
-          "gid://shopify/Collection/278337814698": Object.keys(COLLECTION_FIELDS),
+          [collection.id]: COLLECTION_FIELDS,
         }}
       />
     </Page>

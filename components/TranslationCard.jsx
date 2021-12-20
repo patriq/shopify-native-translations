@@ -199,10 +199,11 @@ const TranslationCard = ({
             translatableResources.map((resource) =>
               resource.translatableContent.map((content) =>
                 <TranslatableTextField
-                  key={resource.resourceId + content.key}
-                  translatableContentKey={content.key}
+                  key={content.digest}
+                  translatableContent={content}
                   value={getTranslation(resource.resourceId, content.key)}
-                  onChange={(value) => setTranslation(resource.resourceId, content.key, value)}
+                  onChange={(value) =>
+                    setTranslation(resource.resourceId, content.key, value)}
                 />))}
         </FormLayout>
       </Card.Section>
