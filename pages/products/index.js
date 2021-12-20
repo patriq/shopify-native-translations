@@ -15,7 +15,11 @@ import React from "react";
 import TranslationProgressBadge from "../../components/TranslationProgressBadge";
 import { PRODUCT_FIELDS } from "../../constants/translatableContents";
 import { useShopLocales } from "../../context/ShopLocales";
-import { translationsCount, translationsSubQueries } from "../../util/utils";
+import {
+  usePaginatedQuery,
+  translationsCount,
+  translationsSubQueries
+} from "../../util/utils";
 
 const productsWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
@@ -42,25 +46,13 @@ const productsWithTranslations = (locales) => gql`
 const Products = () => {
   const router = useRouter();
   const { secondaryLocales, loadingLocales } = useShopLocales();
-  const { data, loading, fetchMore } = useQuery(
-    productsWithTranslations(secondaryLocales),
-    {
-      notifyOnNetworkStatusChange: true,
-      variables: { limit: 10 },
+  const {
+    products, loading,
+    nextPage, previousPage, hasPreviousPage, hasNextPage
+  } = usePaginatedQuery(
+    productsWithTranslations(secondaryLocales), 50, "products", {
       skip: loadingLocales
     });
-
-  const products = React.useMemo(
-    () => data?.products.edges || [], [data]);
-  const hasNextPage = React.useMemo(
-    () => data?.products.pageInfo.hasNextPage, [data]);
-
-  const handleNext = React.useCallback(() =>
-    fetchMore({
-      variables: {
-        cursor: products[products.length - 1].cursor
-      }
-    }), [fetchMore, products]);
 
   return (
     <Page
@@ -103,7 +95,12 @@ const Products = () => {
           }
         />
         <Card.Section>
-          <Pagination hasNext={hasNextPage} onNext={handleNext} />
+          <Pagination
+            hasPrevious={hasPreviousPage}
+            hasNext={hasNextPage}
+            onNext={nextPage}
+            onPrevious={previousPage}
+          />
         </Card.Section>
       </Card>
     </Page>
