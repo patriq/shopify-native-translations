@@ -106,19 +106,25 @@ const useTranslationsState = (translatableResources, locale) => {
         return newState;
       }), [setState]);
   const getCreateMutationPayloads = React.useCallback(() =>
-    Object.entries(state).map(([resourceId, translations]) => ({
-      id: resourceId,
-      translations: Object.entries(translations)
-        // Filter those who actually have a value
-        .filter(([, translation]) => translation.value)
-        .map(([contentKey, translation]) => ({
-          key: contentKey,
-          value: translation.value,
-          locale: locale.code,
-          translatableContentDigest: translation.digest
-        }))
-    })), [state, locale]);
+    Object.entries(state)
+      // Filter resources that have updated translations
+      .filter(([, translations]) =>
+        Object.values(translations).some((translation) => translation.value))
+      // Map each to a variables payload
+      .map(([resourceId, translations]) => ({
+        id: resourceId,
+        translations: Object.entries(translations)
+          // Filter those who actually have a value
+          .filter(([, translation]) => translation.value)
+          .map(([contentKey, translation]) => ({
+            key: contentKey,
+            value: translation.value,
+            locale: locale.code,
+            translatableContentDigest: translation.digest
+          }))
+      })), [state, locale]);
   const getRemoveMutationPayloads = React.useCallback(() =>
+    // Map each to a variables payload
     Object.entries(state).map(([resourceId, translations]) => ({
       id: resourceId,
       keys: Object.keys(translations),
