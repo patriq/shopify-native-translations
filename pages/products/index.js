@@ -13,19 +13,19 @@ import { ImageMajor } from "@shopify/polaris-icons";
 import { useRouter } from "next/router";
 import React from "react";
 import TranslationProgressBadge from "../../components/TranslationProgressBadge";
-import { COLLECTION_FIELDS } from "../../constants/translatableContents";
+import { PRODUCT_FIELDS } from "../../constants/translatableContents";
 import { useShopLocales } from "../../context/ShopLocales";
 import { translationsCount, translationsSubQueries } from "../../util/utils";
 
-const collectionWithTranslations = (locales) => gql`
+const productsWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
-    collections(first: $limit, after: $cursor) {
+    products(first: $limit, after: $cursor) {
       edges {
         node {
           id
           handle
           title
-          image {
+          featuredImage {
             url
           }
           ${translationsSubQueries(locales)}
@@ -39,32 +39,32 @@ const collectionWithTranslations = (locales) => gql`
   }
 `;
 
-const Collections = () => {
+const Products = () => {
   const router = useRouter();
   const { secondaryLocales, loadingLocales } = useShopLocales();
   const { data, loading, fetchMore } = useQuery(
-    collectionWithTranslations(secondaryLocales),
+    productsWithTranslations(secondaryLocales),
     {
       notifyOnNetworkStatusChange: true,
       variables: { limit: 10 },
       skip: loadingLocales
     });
 
-  const collections = React.useMemo(
-    () => data?.collections.edges || [], [data]);
+  const products = React.useMemo(
+    () => data?.products.edges || [], [data]);
   const hasNextPage = React.useMemo(
-    () => data?.collections.pageInfo.hasNextPage, [data]);
+    () => data?.products.pageInfo.hasNextPage, [data]);
 
   const handleNext = React.useCallback(() =>
     fetchMore({
       variables: {
-        cursor: collections[collections.length - 1].cursor
+        cursor: products[products.length - 1].cursor
       }
-    }), [fetchMore, collections]);
+    }), [fetchMore, products]);
 
   return (
     <Page
-      title="Collections"
+      title="Products"
       breadcrumbs={[{
         content: "Home",
         onAction: () => router.push("/")
@@ -72,7 +72,7 @@ const Collections = () => {
     >
       <Card>
         <ResourceList
-          items={collections}
+          items={products}
           loading={loading || loadingLocales}
           renderItem={({ node }) =>
             <ResourceItem
@@ -80,12 +80,12 @@ const Collections = () => {
               media={
                 <Thumbnail
                   size="small"
-                  source={node.image ? node.image.url : ImageMajor}
+                  source={node.featuredImage ? node.featuredImage.url : ImageMajor}
                   alt={node.title}
                 />
               }
               verticalAlignment="center"
-              onClick={() => router.push(`/collections/${node.handle}`)}
+              onClick={() => router.push(`/products/${node.handle}`)}
             >
               <Stack>
                 <Stack.Item fill>
@@ -96,7 +96,7 @@ const Collections = () => {
                     key={locale.code}
                     locale={locale}
                     translationsCount={translationsCount(node, locale.code)}
-                    expectedTranslationsCount={Object.keys(COLLECTION_FIELDS).length}
+                    expectedTranslationsCount={Object.keys(PRODUCT_FIELDS).length}
                   />)}
               </Stack>
             </ResourceItem>
@@ -110,4 +110,4 @@ const Collections = () => {
   );
 };
 
-export default Collections;
+export default Products;

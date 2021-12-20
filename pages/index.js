@@ -8,6 +8,9 @@ const Index = () => (
         <Link href="/collections">Collections</Link>
       </List.Item>
       <List.Item>
+        <Link href="/products">Products</Link>
+      </List.Item>
+      <List.Item>
         <Link href="/locales">Shop locale settings</Link>
       </List.Item>
     </List>
