@@ -78,3 +78,22 @@ export const usePaginatedQuery = (
     loading,
   };
 };
+
+export const translationsCacheFieldKey = (localeCode) =>
+  `translations({"locale":"${localeCode}"})`;
+
+export const findResourceCacheIdsWithTranslations = (apolloClient, resourceId, localeCode) => {
+  const result = [];
+  for (const [cacheKey, cacheValue] of Object.entries(apolloClient.cache.data.data)) {
+    if (!cacheKey.includes(resourceId)) {
+      continue;
+    }
+    // Find for the translations({"locale":"<localeCode>"}) key
+    for (const resourceKey of Object.keys(cacheValue)) {
+      if (resourceKey === translationsCacheFieldKey(localeCode)) {
+        result.push(cacheKey);
+      }
+    }
+  }
+  return result;
+};

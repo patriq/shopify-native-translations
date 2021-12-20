@@ -27,7 +27,7 @@ const getTranslatableResourcesByIdsQuery = (locales) => gql`
 
 const TranslatableCards = ({ resources }) => {
   const { secondaryLocales, loadingLocales } = useShopLocales();
-  const { data, loading, refetch } = useQuery(
+  const { data, loading } = useQuery(
     getTranslatableResourcesByIdsQuery(secondaryLocales),
     {
       variables: {
@@ -66,7 +66,6 @@ const TranslatableCards = ({ resources }) => {
         <TranslationCard
           translatableResources={translatableResources}
           loadingTranslations={loading}
-          refetchTranslations={refetch}
         />
       </Layout.Section>
     </Layout>

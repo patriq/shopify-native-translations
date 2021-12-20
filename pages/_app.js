@@ -22,6 +22,11 @@ const CustomApolloProvider = ({ Component, ...props }) => {
     }),
     cache: new InMemoryCache({
       typePolicies: {
+        // Collection, Product and Metafields automatically cached since they
+        // have an id field.
+        TranslatableResource: {
+          keyFields: ["resourceId"],
+        },
         Query: {
           fields: {
             // Used in collections.js

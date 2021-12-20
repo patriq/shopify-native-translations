@@ -1,8 +1,13 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import { Card, FormLayout, Select, SkeletonBodyText } from "@shopify/polaris";
 import React from "react";
 import { useShopLocales } from "../context/ShopLocales";
-import { translation, translationsCount } from "../util/utils";
+import {
+  findResourceCacheIdsWithTranslations,
+  translation,
+  translationsCacheFieldKey,
+  translationsCount
+} from "../util/utils";
 import TranslatableTextField from "./TranslatableTextField";
 
 const CREATE_TRANSLATION_MUTATION = gql`
@@ -136,18 +141,41 @@ const useTranslationsState = (translatableResources, locale) => {
   ];
 };
 
-const handleMutation = async (mutation, payloadFactory, setLoader, refetch) => {
+const handleTranslationsMutation = async (
+  apolloClient, locale,
+  mutation, payloadFactory, setLoader
+) => {
   setLoader(true);
   await Promise.all(
-    payloadFactory().map((payload) =>
-      mutation({ variables: payload })));
-  await refetch();
+    payloadFactory().map(async (payload) => {
+      const result = await mutation({ variables: payload });
+      // Change each cache item related to the resource that was updated.
+      const cacheIds = findResourceCacheIdsWithTranslations(
+        apolloClient, payload.id, locale.code);
+      cacheIds.forEach((cacheId) => {
+        apolloClient.cache.modify({
+          id: cacheId,
+          fields: {
+            [translationsCacheFieldKey(locale.code)]: () => {
+              // translationsRemove contains the removed translations.
+              if (result.data.translationsRemove) {
+                return [];
+              }
+              // translationsRegister contains the added translations.
+              return result.data.translationsRegister.translations;
+            }
+          }
+        });
+      });
+    }));
   setLoader(false);
 };
 
 const TranslationCard = ({
-  translatableResources, loadingTranslations, refetchTranslations
+  translatableResources,
+  loadingTranslations
 }) => {
+  const client = useApolloClient();
   const [saving, setSaving] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const [selectedLocale, selectComponent] = useTranslationLocaleSelect();
@@ -165,20 +193,22 @@ const TranslationCard = ({
     [selectedLocale, translatableResources]);
 
   const handleSave = React.useCallback(() =>
-      handleMutation(
+      handleTranslationsMutation(
+        client, selectedLocale,
         createTranslation,
         getCreateMutationPayloads,
-        setSaving,
-        refetchTranslations),
-    [createTranslation, getCreateMutationPayloads, setSaving, refetchTranslations]);
+        setSaving),
+    [client, selectedLocale,
+      createTranslation, getCreateMutationPayloads, setSaving]);
 
   const handleRemove = React.useCallback(async () =>
-      handleMutation(
+      handleTranslationsMutation(
+        client, selectedLocale,
         removeTranslation,
         getRemoveMutationPayloads,
-        setDeleting,
-        refetchTranslations),
-    [removeTranslation, getRemoveMutationPayloads, setDeleting, refetchTranslations]);
+        setDeleting),
+    [client, selectedLocale,
+      removeTranslation, getRemoveMutationPayloads, setDeleting]);
 
   return (
     <Card
