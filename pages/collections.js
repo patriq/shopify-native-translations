@@ -12,10 +12,12 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 import { useRouter } from "next/router";
 import React from "react";
-import TranslationProgressBadge from "../../components/TranslationProgressBadge";
-import { COLLECTION_FIELDS } from "../../constants/translatableContents";
-import { useShopLocales } from "../../context/ShopLocales";
-import { translationsCount, translationsSubQueries, usePaginatedQuery } from "../../util/utils";
+import CollectionPage from "../components/CollectionPage";
+import ProductPage from "../components/ProductPage";
+import TranslationProgressBadge from "../components/TranslationProgressBadge";
+import { COLLECTION_FIELDS } from "../constants/translatableContents";
+import { useShopLocales } from "../context/ShopLocales";
+import { translationsCount, translationsSubQueries, usePaginatedQuery } from "../util/utils";
 
 const collectionWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
@@ -40,6 +42,7 @@ const collectionWithTranslations = (locales) => gql`
 `;
 
 const Collections = () => {
+  const [selectedCollection, setSelectedCollection] = React.useState(null);
   const router = useRouter();
   const { secondaryLocales, loadingLocales } = useShopLocales();
   const {
@@ -50,6 +53,14 @@ const Collections = () => {
       skip: loadingLocales
     });
 
+  if (selectedCollection) {
+    return (
+      <CollectionPage
+        collection={selectedCollection}
+        onBack={() => setSelectedCollection(null)}
+      />
+    );
+  }
   return (
     <Page
       title="Collections"
@@ -73,7 +84,7 @@ const Collections = () => {
                 />
               }
               verticalAlignment="center"
-              onClick={() => router.push(`/collections/${node.handle}`)}
+              onClick={() => setSelectedCollection(node)}
             >
               <Stack>
                 <Stack.Item fill>

@@ -24,9 +24,9 @@ const CustomApolloProvider = ({ Component, ...props }) => {
       typePolicies: {
         Query: {
           fields: {
-            // Used in collections/index.js
+            // Used in collections.js
             collections: relayStylePagination(),
-            // Used in products/index.js
+            // Used in products.js
             products: relayStylePagination(),
           },
         },

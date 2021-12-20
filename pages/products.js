@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import {
   Card,
   Page,
@@ -12,14 +12,12 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 import { useRouter } from "next/router";
 import React from "react";
-import TranslationProgressBadge from "../../components/TranslationProgressBadge";
-import { PRODUCT_FIELDS } from "../../constants/translatableContents";
-import { useShopLocales } from "../../context/ShopLocales";
-import {
-  usePaginatedQuery,
-  translationsCount,
-  translationsSubQueries
-} from "../../util/utils";
+import ProductPage from "../components/ProductPage";
+import TranslationProgressBadge from "../components/TranslationProgressBadge";
+import { PRODUCT_METAFIELDS_LIMIT } from "../constants/settings";
+import { PRODUCT_FIELDS } from "../constants/translatableContents";
+import { useShopLocales } from "../context/ShopLocales";
+import { translationsCount, translationsSubQueries, usePaginatedQuery } from "../util/utils";
 
 const productsWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
@@ -33,6 +31,14 @@ const productsWithTranslations = (locales) => gql`
             url
           }
           ${translationsSubQueries(locales)}
+          metafields(first: ${PRODUCT_METAFIELDS_LIMIT}) {
+            edges {
+              node {
+                id
+                key
+              }
+            }
+          }
         }
         cursor
       }
@@ -44,16 +50,25 @@ const productsWithTranslations = (locales) => gql`
 `;
 
 const Products = () => {
+  const [selectedProduct, setSelectedProduct] = React.useState(null);
   const router = useRouter();
   const { secondaryLocales, loadingLocales } = useShopLocales();
   const {
     products, loading,
     nextPage, previousPage, hasPreviousPage, hasNextPage
   } = usePaginatedQuery(
-    productsWithTranslations(secondaryLocales), 50, "products", {
+    productsWithTranslations(secondaryLocales), 10, "products", {
       skip: loadingLocales
     });
 
+  if (selectedProduct) {
+    return (
+      <ProductPage
+        product={selectedProduct}
+        onBack={() => setSelectedProduct(null)}
+      />
+    );
+  }
   return (
     <Page
       title="Products"
@@ -77,7 +92,7 @@ const Products = () => {
                 />
               }
               verticalAlignment="center"
-              onClick={() => router.push(`/products/${node.handle}`)}
+              onClick={() => setSelectedProduct(node)}
             >
               <Stack>
                 <Stack.Item fill>
