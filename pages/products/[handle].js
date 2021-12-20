@@ -37,7 +37,7 @@ const Product = () => {
 
   const product = React.useMemo(() =>
     data?.productByHandle, [data]);
-  const metafields = React.useMemo(() => {
+  const metafieldsResources = React.useMemo(() => {
     const result = {};
     product?.metafields?.edges?.forEach(({ node }) => {
       result[node.id] = {
@@ -46,7 +46,6 @@ const Product = () => {
     });
     return result;
   }, [product]);
-  console.log(metafields);
 
   if (loading || !product) {
     return <SkeletonPage breadcrumbs />;
@@ -68,7 +67,7 @@ const Product = () => {
       <TranslatableCards
         resources={{
           [product.id]: PRODUCT_FIELDS,
-          ...metafields
+          ...metafieldsResources
         }}
       />
     </Page>
