@@ -1,29 +1,25 @@
-# Shopify App Node
+# Shopify Native Translations
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.com/Shopify/shopify-app-node.svg?branch=master)](https://travis-ci.com/Shopify/shopify-app-node)
+An open-source Shopify App, that will allow you to translate Collections, Products and their Metafields using [Shopify's GraphQL Admin Translations API](https://shopify.dev/api/examples/i18n-app-translations).
 
-Boilerplate to create an embedded Shopify app made with Node, [Next.js](https://nextjs.org/), [Shopify-koa-auth](https://github.com/Shopify/quilt/tree/master/packages/koa-shopify-auth), [Polaris](https://github.com/Shopify/polaris-react), and [App Bridge React](https://shopify.dev/tools/app-bridge/react-components).
+This app was bootstraped with [Shopify CLI](https://github.com/Shopify/shopify-cli) and made with Node, [Next.js](https://nextjs.org/), [Shopify-koa-auth](https://github.com/Shopify/quilt/tree/master/packages/koa-shopify-auth), [Polaris](https://github.com/Shopify/polaris-react), and [App Bridge React](https://shopify.dev/tools/app-bridge/react-components).
 
 ## Installation
 
-Using the [Shopify CLI](https://github.com/Shopify/shopify-cli) run:
+1. Fork this repository.
+2. Change to its directory and run `shopify node create -n YOUR_APP_NAME`
+3. Make sure to update the `SCOPES` variable in your `.env` file to match the ones in the `.env.example` file.
+4. You can now use `shopify app serve` to debug your app.
 
-```sh
-~/ $ shopify node create -n APP_NAME
-```
+## Deployment
 
-Or, fork and clone repo
+I have only experimented deploying with [Heroku](https://heroku.com). To deploy in Heroku:
 
-## Requirements
-
-- If you don’t have one, [create a Shopify partner account](https://partners.shopify.com/signup).
-- If you don’t have one, [create a Development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) where you can install and test your app.
-- In the Partner dashboard, [create a new app](https://help.shopify.com/en/api/tools/partner-dashboard/your-apps#create-a-new-app). You’ll need this app’s API credentials during the setup process.
-
-## Usage
-
-This repository is used by [Shopify CLI](https://github.com/Shopify/shopify-cli) as a scaffold for Node apps. You can clone or fork it yourself, but it’s faster and easier to use Shopify App CLI, which handles additional routine development tasks for you.
+1. Create a new app in Heroku.
+2. Connect your forked repository to your Heroku app.
+3. In your app settings, add all your environment variables in the Config Vars section.
+4. In the Deploy tab, deploy the `main` branch.
+5. Update the URL of your Shopify App.
 
 ## License
 
