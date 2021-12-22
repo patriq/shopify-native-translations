@@ -21,9 +21,10 @@ export const translationsSubQueries = (locales) => `
 export const translations = (resourceWithTranslations, localeCode) =>
   resourceWithTranslations[regionCode(localeCode)];
 
-export const translation = (resourceWithTranslations, localeCode, key) =>
-  translations(resourceWithTranslations, localeCode)
-    .find((translation) => translation.key === key)?.value;
+export const translationValue =
+  (resourceWithTranslations, localeCode, fieldKey) =>
+    translations(resourceWithTranslations, localeCode)
+      .find((translation) => translation.key === fieldKey)?.value;
 
 export const translationsCount = (resourceWithTranslations, localeCode) =>
   translations(resourceWithTranslations, localeCode).length;

@@ -1,8 +1,12 @@
 # Shopify Native Translations
 
-An open-source Shopify App, that will allow you to translate Collections, Products and their Metafields using [Shopify's GraphQL Admin Translations API](https://shopify.dev/api/examples/i18n-app-translations).
+An open-source Shopify App, that will allow you to translate Collections, Products and respective Metafields and Variants using [Shopify's GraphQL Admin Translations API](https://shopify.dev/api/examples/i18n-app-translations).
 
 This app was bootstraped with [Shopify CLI](https://github.com/Shopify/shopify-cli) and made with Node, [Next.js](https://nextjs.org/), [Shopify-koa-auth](https://github.com/Shopify/quilt/tree/master/packages/koa-shopify-auth), [Polaris](https://github.com/Shopify/polaris-react), and [App Bridge React](https://shopify.dev/tools/app-bridge/react-components).
+
+## Settings
+
+Make sure to change the `constants/settings.js` code to correspond to your app's user's needs.
 
 ## Installation
 

@@ -4,7 +4,7 @@ import React from "react";
 import { useShopLocales } from "../context/ShopLocales";
 import {
   findResourceCacheIdsWithTranslations,
-  translation,
+  translationValue,
   translationsCacheFieldKey,
   translationsCount
 } from "../util/utils";
@@ -76,7 +76,7 @@ const useTranslationsState = (translatableResources, locale) => {
       state[id] = {};
       resource.translatableContent.forEach((content) => {
         state[id][content.key] = {
-          value: translation(resource, locale.code, content.key),
+          value: translationValue(resource, locale.code, content.key),
           digest: content.digest
         };
       });
@@ -94,40 +94,66 @@ const useTranslationsState = (translatableResources, locale) => {
       Object.values(state).some((resource) =>
         Object.values(resource).some((translation) => translation.value)),
     [state]);
+
   const getTranslation = React.useCallback((resourceId, contentKey) => {
     if (!state[resourceId]) {
       return "";
     }
     return state[resourceId][contentKey].value || "";
   }, [state]);
-  const setTranslation = React.useCallback(
-    (resourceId, contentKey, value) =>
+
+  const setTranslations = React.useCallback(
+    (resourceIds, contentKey, value) =>
       setState((oldState) => {
-        if (!oldState[resourceId]) {
+        let changed = false;
+        const newState = { ...oldState };
+        for (const resourceId of resourceIds) {
+          if (!oldState[resourceId]) {
+            continue;
+          }
+          changed = true;
+          newState[resourceId][contentKey].value = value || undefined;
+        }
+        if (!changed) {
           return oldState;
         }
-        const newState = { ...oldState };
-        newState[resourceId][contentKey].value = value || undefined;
         return newState;
       }), [setState]);
+
   const getCreateMutationPayloads = React.useCallback(() =>
     Object.entries(state)
-      // Filter resources that have updated translations
-      .filter(([, translations]) =>
-        Object.values(translations).some((translation) => translation.value))
-      // Map each to a variables payload
+      // Filter resources that have a different translation than the one fetched
+      // This way we only send a request if any field of the resource was
+      // changed, saving bandwidth and quota in the process
+      .filter(([resourceId, translations]) => {
+        const resource = translatableResources.find(
+          (resource) => resource.resourceId === resourceId);
+        for (const [contentKey, translation] of Object.entries(translations)) {
+          if (translation.value === undefined) {
+            continue;
+          }
+          // Compare the value in the state with the original value
+          if (translation.value !==
+            translationValue(resource, locale.code, contentKey)) {
+            return true;
+          }
+        }
+        return false;
+      })
+      // Map each resource to a variables payload
       .map(([resourceId, translations]) => ({
         id: resourceId,
         translations: Object.entries(translations)
-          // Filter those who actually have a value
-          .filter(([, translation]) => translation.value)
+          // Only include the translations that have a value
+          .filter(([, translation]) => translation.value !== undefined)
           .map(([contentKey, translation]) => ({
             key: contentKey,
             value: translation.value,
             locale: locale.code,
             translatableContentDigest: translation.digest
           }))
-      })), [state, locale]);
+      })), [translatableResources, state, locale]);
+
   const getRemoveMutationPayloads = React.useCallback(() =>
     // Map each to a variables payload
     Object.entries(state).map(([resourceId, translations]) => ({
@@ -135,8 +161,9 @@ const useTranslationsState = (translatableResources, locale) => {
       keys: Object.keys(translations),
       locales: [locale.code]
     })), [state, locale]);
+
   return [
-    getTranslation, setTranslation, hasTranslations,
+    getTranslation, setTranslations, hasTranslations,
     getCreateMutationPayloads, getRemoveMutationPayloads
   ];
 };
@@ -146,28 +173,29 @@ const handleTranslationsMutation = async (
   mutation, payloadFactory, setLoader
 ) => {
   setLoader(true);
-  await Promise.all(
-    payloadFactory().map(async (payload) => {
-      const result = await mutation({ variables: payload });
-      // Change each cache item related to the resource that was updated.
-      const cacheIds = findResourceCacheIdsWithTranslations(
-        apolloClient, payload.id, locale.code);
-      cacheIds.forEach((cacheId) => {
-        apolloClient.cache.modify({
-          id: cacheId,
-          fields: {
-            [translationsCacheFieldKey(locale.code)]: () => {
-              // translationsRemove contains the removed translations.
-              if (result.data.translationsRemove) {
-                return [];
-              }
-              // translationsRegister contains the added translations.
-              return result.data.translationsRegister.translations;
+  const idsWithResults = await Promise.all(
+    payloadFactory().map(async (payload) =>
+      [payload.id, await mutation({ variables: payload })]));
+  for (const [id, result] of idsWithResults) {
+    // Change each cache item related to the resource that was updated.
+    const cacheIds = findResourceCacheIdsWithTranslations(
+      apolloClient, id, locale.code);
+    cacheIds.forEach((cacheId) => {
+      apolloClient.cache.modify({
+        id: cacheId,
+        fields: {
+          [translationsCacheFieldKey(locale.code)]: () => {
+            // translationsRemove contains the removed translations.
+            if (result.data.translationsRemove) {
+              return [];
             }
+            // translationsRegister contains the added translations.
+            return result.data.translationsRegister.translations;
           }
-        });
+        }
       });
-    }));
+    });
+  }
   setLoader(false);
 };
 
@@ -180,7 +208,7 @@ const TranslationCard = ({
   const [deleting, setDeleting] = React.useState(false);
   const [selectedLocale, selectComponent] = useTranslationLocaleSelect();
   const [
-    getTranslation, setTranslation, hasTranslations,
+    getTranslation, setTranslations, hasTranslations,
     getCreateMutationPayloads, getRemoveMutationPayloads] =
     useTranslationsState(translatableResources, selectedLocale);
   const [createTranslation] = useMutation(CREATE_TRANSLATION_MUTATION);
@@ -210,6 +238,34 @@ const TranslationCard = ({
     [client, selectedLocale,
       removeTranslation, getRemoveMutationPayloads, setDeleting]);
 
+  const translationFields = React.useMemo(() => {
+    const fields = [];
+    const duplicateLabelsMap = new Map();
+    for (const resource of translatableResources) {
+      for (const content of resource.translatableContent) {
+        // Collect all duplicate label resource IDs, so we can change them all
+        // to the same value.
+        if (!duplicateLabelsMap.has(content.label)) {
+          duplicateLabelsMap.set(content.label, [resource.resourceId]);
+          fields.push(
+            <TranslatableTextField
+              key={content.label}
+              translatableContent={content}
+              value={getTranslation(resource.resourceId, content.key)}
+              onChange={(value) => {
+                setTranslations(
+                  duplicateLabelsMap.get(content.label), content.key, value);
+              }}
+            />
+          );
+        } else {
+          duplicateLabelsMap.get(content.label).push(resource.resourceId);
+        }
+      }
+    }
+    return fields;
+  }, [getTranslation, setTranslations, translatableResources]);
+
   return (
     <Card
       title={`${selectedLocale.name}`}
@@ -231,16 +287,7 @@ const TranslationCard = ({
       <Card.Section title="Translation">
         {loadingTranslations && <SkeletonBodyText />}
         <FormLayout>
-          {!loadingTranslations &&
-            translatableResources.map((resource) =>
-              resource.translatableContent.map((content) =>
-                <TranslatableTextField
-                  key={content.digest}
-                  translatableContent={content}
-                  value={getTranslation(resource.resourceId, content.key)}
-                  onChange={(value) =>
-                    setTranslation(resource.resourceId, content.key, value)}
-                />))}
+          {!loadingTranslations && translationFields}
         </FormLayout>
       </Card.Section>
     </Card>

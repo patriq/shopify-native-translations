@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import ProductPage from "../components/ProductPage";
 import TranslationProgressBadge from "../components/TranslationProgressBadge";
-import { PRODUCT_METAFIELDS_LIMIT } from "../constants/settings";
+import { PRODUCT_METAFIELDS_LIMIT, PRODUCT_VARIANTS_LIMIT } from "../constants/settings";
 import { PRODUCT_FIELDS } from "../constants/translatableContents";
 import { useShopLocales } from "../context/ShopLocales";
 import { translationsCount, translationsSubQueries, usePaginatedQuery } from "../util/utils";
@@ -38,6 +38,21 @@ const productsWithTranslations = (locales) => gql`
                 key
               }
             }
+          }
+          variants(first: ${PRODUCT_VARIANTS_LIMIT}) {
+            edges {
+              node {
+                id
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+          options {
+            name
+            position
           }
         }
         cursor

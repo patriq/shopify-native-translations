@@ -10,8 +10,11 @@ const PRODUCT_FIELDS = {
 
 const METAFIELD_VALUE_FIELD = "value";
 
+const VARIANT_OPTION_FIELD = (position) => `option${position}`;
+
 module.exports = {
   COLLECTION_FIELDS,
   PRODUCT_FIELDS,
   METAFIELD_VALUE_FIELD,
+  VARIANT_OPTION_FIELD
 };

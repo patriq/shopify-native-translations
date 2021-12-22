@@ -43,10 +43,12 @@ const TranslatableCards = ({ resources }) => {
     return edges.map(({ node }) => ({
       ...node,
       translatableContent: node.translatableContent
+        // Augment the resource with the label
         .map((field) => ({
           ...field,
           label: resources[node.resourceId][field.key]
         }))
+        // Filter resource fields that we care about
         .filter((field) => field.label),
     }));
   }, [resources, data]);

@@ -6,6 +6,25 @@ import TranslatableTextField from "./TranslatableTextField";
 const OriginalCard = ({ translatableResources, loadingTranslations }) => {
   const { primaryLocale } = useShopLocales();
 
+  const translationFields = React.useMemo(() => {
+    const fields = [];
+    const duplicateLabelSet = new Set();
+    for (const resource of translatableResources) {
+      for (const content of resource.translatableContent) {
+        if (!duplicateLabelSet.has(content.label)) {
+          duplicateLabelSet.add(content.label);
+          fields.push(
+            <TranslatableTextField
+              key={content.label}
+              translatableContent={content}
+            />
+          );
+        }
+      }
+    }
+    return fields;
+  }, [translatableResources]);
+
   return (
     <Card title={`${primaryLocale.name} (default)`}>
       <Card.Section>
@@ -20,13 +39,7 @@ const OriginalCard = ({ translatableResources, loadingTranslations }) => {
       <Card.Section title="Original">
         {loadingTranslations && <SkeletonBodyText />}
         <FormLayout>
-          {!loadingTranslations &&
-            translatableResources.map((resource) =>
-              resource.translatableContent.map((content) =>
-                <TranslatableTextField
-                  key={content.digest}
-                  translatableContent={content}
-                />))}
+          {!loadingTranslations && translationFields}
         </FormLayout>
       </Card.Section>
     </Card>
