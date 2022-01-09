@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import {
   Card,
   Page,
@@ -13,7 +13,6 @@ import { ImageMajor } from "@shopify/polaris-icons";
 import { useRouter } from "next/router";
 import React from "react";
 import CollectionPage from "../components/CollectionPage";
-import ProductPage from "../components/ProductPage";
 import TranslationProgressBadge from "../components/TranslationProgressBadge";
 import { COLLECTION_FIELDS } from "../constants/translatableContents";
 import { useShopLocales } from "../context/ShopLocales";
@@ -21,7 +20,7 @@ import { translationsCount, translationsSubQueries, usePaginatedQuery } from "..
 
 const collectionWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
-    collections(first: $limit, after: $cursor) {
+    collections(first: $limit, after: $cursor, sortKey: TITLE) {
       edges {
         node {
           id

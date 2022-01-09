@@ -21,7 +21,7 @@ import { translationsCount, translationsSubQueries, usePaginatedQuery } from "..
 
 const productsWithTranslations = (locales) => gql`
   query ($limit: Int!, $cursor: String) {
-    products(first: $limit, after: $cursor) {
+    products(first: $limit, after: $cursor, sortKey: TITLE) {
       edges {
         node {
           id
